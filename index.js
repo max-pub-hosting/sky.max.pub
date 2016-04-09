@@ -8788,6 +8788,6 @@ Polymer({
         is: "app-root",
         setHash: function(ev){
             var city = ev.detail;
-            document.location.hash = '#/'+ city.lat.toFixed(2)+','+city.lon.toFixed(2);
+            document.location.hash = '#'+ city.lat.toFixed(2)+'#'+city.lon.toFixed(2);
         }
     });

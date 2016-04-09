@@ -169,11 +169,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         .loading{
             color: silver;
         }
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* IE/Edge */
+  user-select: none;           /* non-prefixed version, currently
+                                  not supported by any browser */
+}
+
     </style>
     <template>
         <table>
             <tbody><tr>
-                <td class="icon" on-tap="back">
+                <td class="icon noselect" on-tap="back">
                     <!-- <button>&larr;</button> -->
                     ←
                     <!-- <img src='../../build/bin/back.png'/> -->
@@ -1457,7 +1468,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </article>
         </hash-route>
 
-        <hash-route regex="/(-?\d+\.\d+),(-?\d+\.\d+)" p1="{{lat}}" p2="{{lon}}">
+        <hash-route regex="(-?\d+\.\d+)#(-?\d+\.\d+)" p1="{{lat}}" p2="{{lon}}">
             <article>
                 <week-header lat="[[lat]]" lon="[[lon]]"></week-header>
                 <week-data lat="[[lat]]" lon="[[lon]]" sections="{{sections}}"></week-data>
