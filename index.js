@@ -7825,7 +7825,8 @@ Polymer({
                             var p = result[0];
                             this.set('place',p);
                             STORE.set(p.lat.toFixed(2)+','+p.lon.toFixed(2)+' name', p);
-                            document.location.hash = '#!/' + p.lat.toFixed(2)+','+p.lon.toFixed(2);
+                            setLocation(p.lat, p.lon);
+                            // document.location.hash = '#' + p.lat.toFixed(2)+'#'+p.lon.toFixed(2);
                         }.bind(this), {type:'city'});
                     }
                 }.bind(this));
@@ -8788,6 +8789,11 @@ Polymer({
         is: "app-root",
         setHash: function(ev){
             var city = ev.detail;
-            document.location.hash = '#'+ city.lat.toFixed(2)+'#'+city.lon.toFixed(2);
+            setLocation(city.lat, city.lon);
+            // document.location.hash = '#'+ city.lat.toFixed(2)+'#'+city.lon.toFixed(2);
         }
     });
+
+    setLocation = function(lat,lon){
+        document.location.hash = '#'+ (lat*1).toFixed(2)+'#'+(lon*1).toFixed(2);
+    };
