@@ -1182,7 +1182,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
     <template>
-        <input type="search" placeholder="search..." on-search="search">
+        <input id="search" type="search" placeholder="search..." on-search="search" on-keydown="searchDelayed">
         <template is="dom-repeat" items="{{searchResults}}">
             <one-city data="[[item]]"></one-city>
         </template>       

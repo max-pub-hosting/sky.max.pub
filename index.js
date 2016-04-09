@@ -8363,14 +8363,20 @@ Polymer({
     });
 Polymer({
         is: "find-cities",
-        search: function(event, recurse){
-            var query = event.target.value;
+        search: function(event){
+            // var query = event.target.value;
+            var query = this.$.search.value;
+            if(event==='+city') query += ' city';
+            console.log('place-search',query);
             GEO.search(query, function(places){
                 console.log('place-search',places);
-                if((!places.length)&&(!recurse)) return this.search({target:{value:query+' city'}}, true);
+                if((!places.length)&&(event!='+city')) return this.search('+city');
                 this.set('searchResults',places);
             }.bind(this), {type:'city'});
         },
+        searchDelayed: function(event){
+            this.debounce('search', this.search.bind(this) ,500);
+        }
     });
 Polymer({
         is: "nearby-cities",
