@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "WeatherCharts",
+  "description": "...",
+  "version": "1.0",
+  "author": "www.max.pub",
+  "icons": {
+    "256": "icon.png"
+  },
+  "app": {
+    "background": {
+      "scripts": ["chrome.js"]
+    }
+  },
+  "permissions": [
+    "storage",
+    "geolocation",
+    "http://api.max.pub/weather/"
+  ]
+}
