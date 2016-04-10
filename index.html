@@ -99,19 +99,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <dom-module id="week-header" assetpath="components/week/">
     <style>
         :host{
-            width: 100%;
+            /*width: 100%;*/
             display: block;
             -webkit-app-region: drag;
         }
         table{
             width: 100%;
+            height:100%;
             border-collapse: collapse;
+            /*margin: 0 3mm;*/
         }
         .icon {
             width: 30px;
             font-size: 35px;
             color: white;
-            padding-left: 5px;
+            /*padding-left: 5px;*/
             cursor: pointer;
             -webkit-app-region: no-drag;
         }
@@ -1019,8 +1021,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             display: block;
         }
         table {
-            padding: 3px;
             width: 100%;
+            height: 100%;
+            border-collapse: collapse;
         }
 
         td {
@@ -1315,13 +1318,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             height:100%;
             overflow: hidden;
             border-collapse: collapse;
+            /*margin: 0 3mm;*/
         }
         td{
             height:100%;
             width: 100%;
         }
         .icon {
-            width: 50px;
+            width: 30px;
         }
         .icon img{
             margin-left:5px;
@@ -1330,7 +1334,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
 
         .close{
-            width: 50px;
+            width: 30px;
         }
         .title{
             /*text-align: center;*/
@@ -1386,20 +1390,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         article{width: 100%;}
     }
 
-    city-header, week-header {
-        position: absolute;
-        width: 100%;
-        top: 0;
-        background: #333;
-        color: white;
-        height:50px;
-    }
     city-picker, week-weather{
         /*display: block;*/
         position: absolute;
         left:0px;
         top: 50px;
-        bottom:40px;
+        bottom:30px;
         right:-6mm;
         /*width: 90%;*/
         overflow-x: hidden;
@@ -1418,12 +1414,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         /*}*/
             --padding: 3mm;
     }
-    week-days {
+    header {
+        position: absolute;
+        width: 100%;
+        top: 0;
+        background: #333;
+        color: white;
+        height:50px;
+    }
+    footer {
         position: absolute;
         width: 100%;
         bottom: 0px;
-        height:40px;
+        height:30px;
         background: #333;
+    }
+    header>*, footer>*{
+        padding: 0 3mm;
     }
     </style>
     <template>
@@ -1431,17 +1438,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <hash-route regex="">
             <article>
-                <city-header></city-header>
+                <header>
+                    <city-header></city-header>
+                </header>
                 <city-picker on-select="setHash"></city-picker>
             </article>
         </hash-route>
 
         <hash-route regex="(-?\d+\.\d+),(-?\d+\.\d+)" p1="{{lat}}" p2="{{lon}}">
             <article>
-                <week-header lat="[[lat]]" lon="[[lon]]"></week-header>
                 <week-data lat="[[lat]]" lon="[[lon]]" sections="{{sections}}"></week-data>
+                <header>
+                    <week-header lat="[[lat]]" lon="[[lon]]"></week-header>
+                </header>
                 <week-weather sections="[[sections]]"></week-weather>
-                <week-days labels="[[sections.days]]"></week-days>
+                <footer>
+                    <week-days labels="[[sections.days]]"></week-days>
+                </footer>
             </article>
         </hash-route>
     </template>
