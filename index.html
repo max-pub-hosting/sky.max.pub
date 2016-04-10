@@ -1033,6 +1033,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             color: white;
             font-variant: small-caps;
             font-size:1.3em;
+            font-weight: 300;
         }
     </style>
 
@@ -1252,8 +1253,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
     <template>
-        <template is="dom-repeat" items="{{defaults}}">
-            <place-item data="[[item]]" population-info="show"></place-item>
+        <template is="dom-repeat" items="[[defaults]]">
+            <one-city data="[[item]]" population-info="show"></one-city>
         </template>       
     </template>
 </dom-module>
@@ -1435,7 +1436,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </article>
         </hash-route>
 
-        <hash-route regex="(-?\d+\.\d+)#(-?\d+\.\d+)" p1="{{lat}}" p2="{{lon}}">
+        <hash-route regex="(-?\d+\.\d+),(-?\d+\.\d+)" p1="{{lat}}" p2="{{lon}}">
             <article>
                 <week-header lat="[[lat]]" lon="[[lon]]"></week-header>
                 <week-data lat="[[lat]]" lon="[[lon]]" sections="{{sections}}"></week-data>
