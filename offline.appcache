@@ -1,0 +1,20 @@
+CACHE MANIFEST
+# V1
+
+
+CACHE:
+index.html
+index.js
+icon.png
+bin/cloud.png
+bin/moon.png
+bin/rain.png
+bin/snow.png
+bin/sun.png
+bin/wind.png
+bin/source.sans.300.ttf
+bin/source.sans.500.ttf
+
+
+NETWORK:
+*
