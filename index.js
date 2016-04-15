@@ -7817,14 +7817,14 @@ Polymer({
             if(!this.lat) return;
             if(!this.lon) return;
             this.debounce('search', function(){
-                STORE.get(this.lat+','+this.lon+' name', function(name){
+                STORE.get(this.lat+','+this.lon+' city', function(name){
                     if(name) this.set('place',name);
                     else{
                         GEO.search(this.lat+','+this.lon, function(result){
                             console.log('week-header search',result);
                             var p = result[0];
                             this.set('place',p);
-                            STORE.set(p.lat.toFixed(2)+','+p.lon.toFixed(2)+' name', p);
+                            // STORE.set(p.lat.toFixed(2)+','+p.lon.toFixed(2)+' city', p);
                             setLocation(p.lat, p.lon);
                             // document.location.hash = '#' + p.lat.toFixed(2)+'#'+p.lon.toFixed(2);
                         }.bind(this), {type:'city'});
@@ -8306,18 +8306,12 @@ Polymer({
             //                low: low - 0,
     });
 DATA = {
-    load: function(lat, lon, callback) {
-        DATA.loadCache(lat, lon, callback);
-        DATA.loadFresh(lat, lon, callback);
-    },
-    loadCache: function(lat, lon, callback) {
-        STORE.get(lat + ',' + lon + ' days', function(days) {
-            if (!days) return;
-            if (callback) callback(days);
-        });
+    load: function(lat, lon, callback, name) {
+        STORE.getChange(lat + ',' + lon + ' days', callback, name);
     },
 
-    loadFresh: function(lat, lon, callback) {
+    update: function(lat, lon, callback) {
+        console.log('update', lat, lon);
         GEO.ajax('http://api.max.pub/weather/?range=days&lat=' + lat + '&lon=' + lon, function(days) {
             days = JSON.parse(days);
             if (!days) return;
@@ -8377,8 +8371,12 @@ Polymer({
 
             this.debounce('search', function(){
                 DATA.load(this.lat, this.lon, function(days){
+                    console.log('data',days);
+                    this.set('loading',days?false:true);
+                    if(!days) return;
                     this.set('sections', DATA.convertDaysToSections(days));
                 }.bind(this));
+                DATA.update(this.lat, this.lon);
             }.bind(this), 100);
         }
 
@@ -8386,11 +8384,24 @@ Polymer({
 Polymer({
         is: "week-days",
         properties: {
-            labels: Array
+            lat:{
+                type: Number,
+                observer: 'change'
+            },
+            lon:{
+                type: Number,
+                observer: 'change'
+            },
         },
 
-        ready: function () {
-            // console.log("WEEEEEK-DAYS");
+        change: function () {
+            if(!this.lat) return;
+            if(!this.lon) return;
+            this.debounce('search', function(){
+                DATA.load(this.lat, this.lon, function(days){
+                    this.set('labels', DATA.convertDaysToSections(days).days);
+                }.bind(this),'labels');
+            }.bind(this), 100);
         },
         caps: function(str){
             return str;
@@ -8401,41 +8412,36 @@ Polymer({
 Polymer({
         is: "one-city",
         properties: {
-            data: Object
-            // removeButton:String
+            data: {
+                type:Object,
+                observer: 'change'
+            },
+            type: String
         },
-
-        created: function () {},
-        ready: function () {
-        	// dddd=this;
+        ready:function(){
+            if(!this.star) this.star = false;
+        },
+        change: function () {
+            if(!this.data.lat) return;
+            this.string = this.data.lat.toFixed(2) + ',' + this.data.lon.toFixed(2) + ' city';
+            STORE.getChange(this.string, function(val){
+                this.set('star',val?true:false);
+                // console.log('city-change',this.data.city,this.star,val,this);
+            }.bind(this), this.type);
         },
         setCity: function(event){
-            // var item = event.model.item;
-            // console.log('setcity',item);
             this.fire('select',this.data);
-            // document.location.hash = '#/'+ this.data.lat.toFixed(2)+','+this.data.lon.toFixed(2);
         },
         round: function(val){
         	return val;
             return Math.round(val);
         },
         addStar: function(){
-
+            STORE.set(this.string, this.data);
         },
         delStar: function(){
-
+            STORE.del(this.string);
         }
-        // remove:function(ev){
-        // 	// console.log('remove',this.parentElement.parentElement);
-        // 	console.log('remove',this.data.lat.toFixed(2)+','+this.data.lon.toFixed(2));
-        //     this.fire('remove',this.data);
-        // 	// STORE.del(this.data.lat.toFixed(2)+','+this.data.lon.toFixed(2)+' name');
-        // 	// STORE.del(this.data.lat.toFixed(2)+','+this.data.lon.toFixed(2)+' days');
-        // 	// setTimeout(function(){this.parentElement.parentElement.loadRecent()}.bind(this), 200);
-        // 	// setTimeout(this.parentElement.parentElement.loadRecent.bind(this), 300);
-        // }
-
-
     });
 Polymer({
         is: "find-cities",
@@ -8476,7 +8482,7 @@ Polymer({
 
         ready: function () {
             this.loadFavorites();
-            STORE.onChange('.* name',function(key,val){
+            STORE.onChange('.* city',function(key,val){
                 console.log("STORE-change",key,val);
                 this.loadFavorites();
             }.bind(this));
@@ -8486,7 +8492,7 @@ Polymer({
             STORE.getAll(function(list){
                 var favorites = [];
                 for(var i in list)
-                    if(i.indexOf('name')!==-1)
+                    if(i.indexOf('city')!==-1)
                         favorites.push(list[i]);
                 favorites.sort(this.citySort);
                 this.set('favorites',favorites);
@@ -8637,18 +8643,33 @@ STORE = {
 
 
 
-    changeHandlers: {},
-    onChange: function(regex, callback) {
-        STORE.changeHandlers[regex] = callback;
+    changeListeners: {},
+    onChange: function(regex, callback, name) {
+        // STORE.changeListeners[regex] = callback;
+        if (!name) name = 'default';
+        if (!STORE.changeListeners[regex])
+            STORE.changeListeners[regex] = {};
+        STORE.changeListeners[regex][name] = callback;
+        console.log(Object.keys(STORE.changeListeners[regex]), 'event handlers on', regex);
+    },
+    clearChangeListener: function(regex, name) {
+        if (regex)
+            if (name) delete STORE.changeListeners[regex][name];
+            else STORE.changeListeners[regex] = {};
+        else STORE.changeListeners = {};
     },
     informChange: function(key, val) {
-        for (var regex in STORE.changeHandlers)
+        for (var regex in STORE.changeListeners)
             if (key.match(new RegExp('^' + regex + '$')))
-                STORE.changeHandlers[regex](key, val);
+                for (var i in STORE.changeListeners[regex])
+                    STORE.changeListeners[regex][i](key, val);
+            // STORE.changeListeners[regex](key, val);
             // console.log('inform', key, regex, key.match(new RegExp('^' + regex + '$')));
     },
-    getChange: function(key, callback) {
-        STORE.onChange(key, callback);
+    getChange: function(key, callback, name) {
+        STORE.onChange(key, function(key, val) {
+            callback(val);
+        }, name);
         STORE.get(key, callback);
     },
 
@@ -8658,8 +8679,8 @@ STORE = {
         set: function(key, val) {
             localStorage.setItem(key, JSON.stringify(val));
             STORE.informChange(key, val);
-            // STORE.changeHandlers[key](val);
-            // STORE.changeHandlers['*'](val);
+            // STORE.changeListeners[key](val);
+            // STORE.changeListeners['*'](val);
         },
         get: function(key, callback) {
             callback(JSON.parse(localStorage.getItem(key)));

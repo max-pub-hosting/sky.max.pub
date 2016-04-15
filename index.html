@@ -2,6 +2,8 @@
 <meta name="msapplication-config" content="ieconfig.xml">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<!-- <meta name="msapplication-TileImage" content="tile-background.png">  -->
+<meta name="msapplication-TileColor" content="#FF0000"> 
 
 <title>Weather Charts</title>
 <link rel="shortcut icon" type="image/png" href="/icon.png">
@@ -1064,6 +1066,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
         :host{
             display: block;
+            font-size: var(--item-size);
+
         }
         *{
   -webkit-touch-callout: none; /* iOS Safari */
@@ -1119,25 +1123,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
     <template>
-    	<!-- <li> -->
-            <span on-tap="addStar" class="star">☆</span>
+            <span on-tap="addStar" class="star" hidden$="[[star]]">☆</span>
+            <span on-tap="delStar" class="star" hidden$="[[!star]]">★</span>
     		<span on-tap="setCity" class="city">[[data.city]]</span>
     		<span on-tap="setCity" class="country">[[data.country]]</span>
-    		<!-- <span on-tap="remove" class$='remove [[removeButton]]'>&ndash;</span> -->
-            <!-- <span class$='population [[populationInfo]]'>[[data.population]]M</span> -->
-    	<!-- </li> -->
-	    <!-- <table> -->
-	        <!-- <tr on-tap="setCity"> -->
-	        	<!-- &#9733; -->
-	        	<!-- &#9734; -->
-	            <!-- <td class='star'>&#9733;</td> -->
-	            <!-- <td class='countryCode'>[[data.countryCode]]</td> -->
-	            <!-- <td class='city'>[[data.city]]</td> -->
-	            <!-- <td class='country'>[[data.country]]</td> -->
-	            <!-- <td class='country'>[[data.type]]</td> -->
-	            <!-- <td class='position'>[[round(data.lat)]]/[[round(data.lon)]]</td> -->
-	        <!-- </tr> -->
-	    <!-- </table> -->
     </template>
 
 
@@ -1178,7 +1167,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <template>
         <input id="search" type="search" placeholder="search..." on-search="search" on-keydown="searchDelayed">
         <template is="dom-repeat" items="{{searchResults}}">
-            <one-city data="[[item]]"></one-city>
+            <one-city data="[[item]]" type="search"></one-city>
         </template>       
     </template>
 </dom-module>
@@ -1202,8 +1191,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
     <template>
-        <one-city data="[[gps]]"></one-city>
-        <one-city data="[[ip]]"></one-city>
+        <one-city data="[[gps]]" type="gps"></one-city>
+        <one-city data="[[ip]]" type="ip"></one-city>
     </template>
 </dom-module>
 
@@ -1226,8 +1215,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
     <template>
-        <template is="dom-repeat" items="{{favorites}}">
-            <one-city data="[[item]]" remove-button="show"></one-city>
+        <template is="dom-repeat" items="[[favorites]]">
+            <one-city data="[[item]]" type="favorite"></one-city>
         </template>       
     </template>
 </dom-module>
@@ -1252,7 +1241,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <template>
         <template is="dom-repeat" items="[[defaults]]">
-            <one-city data="[[item]]" population-info="show"></one-city>
+            <one-city data="[[item]]" type="megacity"></one-city>
         </template>       
     </template>
 </dom-module>
@@ -1400,6 +1389,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     city-picker{
         --title-color: orange;
+        --item-size: 1.2em;
     }
     header {
         position: absolute;
@@ -1444,7 +1434,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <week-weather lat="[[lat]]" lon="[[lon]]"></week-weather>
                 </main>
                 <footer>
-                    <week-days labels="[[sections.days]]"></week-days>
+                    <week-days lat="[[lat]]" lon="[[lon]]"></week-days>
                 </footer>
             </article>
         </hash-route>
