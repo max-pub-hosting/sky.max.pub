@@ -1,6 +1,7 @@
 <html><head><script src="index.js" defer=""></script><meta charset="UTF-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
 <meta name="msapplication-config" content="ieconfig.xml">
-
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 
 <title>Weather Charts</title>
 <link rel="shortcut icon" type="image/png" href="/icon.png">
@@ -96,7 +97,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
 
-<dom-module id="week-header" assetpath="components/week/">
+<dom-module id="week-title" assetpath="components/week/">
     <style>
         :host{
             /*width: 100%;*/
@@ -150,6 +151,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             width: 100%;
             overflow: hidden;
             white-space: nowrap;
+            font-weight: 300;
             /*text-overflow: ellipsis;*/
         }
 
@@ -959,23 +961,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
 
         :host{
-            width: 100%;
+            /*width: 100%;*/
             display: block;
             position: relative;
             margin:0;
             padding:0;
         }
 
-        main{
-            padding: 3mm;
-        }
 
-        main>*{
+        div>*{
             --title-color: white;
             --unit-color: silver;
             --background-color: #222;
         }
-        main .loading{
+        div .loading{
             color: white;
             font-size: 2em;
             margin-top: 100px;
@@ -985,10 +984,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <template>
 
-        <main hidden$="[[!sections]]">
+        <div hidden$="[[loading]]">
             <temperature-range data="[[sections.temperature]]" unit="C"></temperature-range>
-            <cloud-cover data="[[sections.cloudCover]]" unit="%"></cloud-cover>
             <rain-bucket data="[[sections.precipitation]]" unit="%"></rain-bucket>
+            <cloud-cover data="[[sections.cloudCover]]" unit="%"></cloud-cover>
             <!-- <humi-dity   data="[[sections.humidity]]"  unit="%"></humi-dity> -->
             <wind-speed data="[[sections.wind]]" unit="km/h"></wind-speed>
             <moon-phase data="[[sections.moon]]" unit="%"></moon-phase>
@@ -999,12 +998,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <line-chart id="ozone" title="Ozone" unit="dobson" data="[[sections.ozone]]"></line-chart>
             <!--        <line-chart id='dewpoint' name='Dew Point' unit='&deg;C' data="[[data.dewPoint]]"></line-chart>-->
             <!--        <line-chart id='visibility' name='Visibility' unit='km' data="[[data.visibility]]"></line-chart>-->
-        </main>
+        </div>
 
-        <main hidden$="[[sections]]">
+        <div hidden$="[[!loading]]">
             <center class="loading">loading weather data...</center>
-        </main>
-
+        </div>
 
     </template>
 
@@ -1066,30 +1064,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
         :host{
             display: block;
-
         }
+        *{
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* IE/Edge */
+  user-select: none;           /* non-prefixed version, currently
+                                  not supported by any browser */
+      }
         .city{
-            /*color: #ddd;*/
             color: white;
+            margin-right: 10px;
         }
         .country {
-            /*color: #999;*/
             color: gray;
-        }
-        .countryCode {
-            color: orange;
-            width: 30px;
-        }
-        .star{
-            color: orange;
-        }
-        .position{
-            color: gray;
-        }
-        li{
-        	color: orange;
-        	font-size: 1.2em;
-            cursor: pointer;
         }
         .city:hover{
             color: orange;
@@ -1101,11 +1091,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             /*font-size: 1.5em;*/
         	float: right;
         	margin-right: 5px;
-            /*color: transparent;*/
-            /*background: silver;*/
-            /*-webkit-border-radius: 100px;*/
-            /*width: 16px;*/
-            /*height: 16px;*/
         }
         .population{
             font-weight: 300;
@@ -1121,16 +1106,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         .remove.show,.population.show{
         	display: inline-block;
         }
+        .star{
+            color: orange;
+            opacity: 0.5;
+            font-weight: 300;
+            margin-right: 10px;
+        }
+        span{
+            cursor: pointer;
+        }
     </style>
 
 
     <template>
-    	<li>
+    	<!-- <li> -->
+            <span on-tap="addStar" class="star">☆</span>
     		<span on-tap="setCity" class="city">[[data.city]]</span>
     		<span on-tap="setCity" class="country">[[data.country]]</span>
-    		<span on-tap="remove" class$="remove [[removeButton]]">–</span>
-            <span class$="population [[populationInfo]]">[[data.population]]M</span>
-    	</li>
+    		<!-- <span on-tap="remove" class$='remove [[removeButton]]'>&ndash;</span> -->
+            <!-- <span class$='population [[populationInfo]]'>[[data.population]]M</span> -->
+    	<!-- </li> -->
 	    <!-- <table> -->
 	        <!-- <tr on-tap="setCity"> -->
 	        	<!-- &#9733; -->
@@ -1269,7 +1264,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <dom-module id="city-picker" assetpath="bower_components/city-picker/">
     <style>
         :host{
-            width: 100%;
+            /*width: 100%;*/
             display: block;
             position: relative;
             margin:0;
@@ -1281,24 +1276,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             margin-bottom: 0;
             text-decoration: none;            
         }
-        main{
-            padding: var(--padding);
-        }
     </style>
 
     <template>
-        <main>
-            <find-cities on-select="selected"></find-cities>
+        <find-cities></find-cities>
 
-            <h3>Nearby</h3>
-            <nearby-cities on-select="selected"></nearby-cities>
+        <h3>Nearby</h3>
+        <nearby-cities></nearby-cities>
 
-            <h3>Favorites</h3>
-            <recent-cities on-select="selected"></recent-cities>
+        <h3>Favorites</h3>
+        <recent-cities></recent-cities>
 
-            <h3><a href="http://en.wikipedia.org/wiki/Megacity" target="_blank">MegaCities</a></h3>
-            <mega-cities on-select="selected"></mega-cities>
-        </main>
+        <h3><a href="http://en.wikipedia.org/wiki/Megacity" target="_blank">MegaCities</a></h3>
+        <mega-cities></mega-cities>
     </template>
 </dom-module>
 
@@ -1306,10 +1296,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
 
-<dom-module id="city-header" assetpath="components/">
+<dom-module id="app-title" assetpath="components/">
     <style>
         :host{
-            width: 100%;
+            /*width: 100%;*/
             display: block;
             -webkit-app-region: drag;
         }
@@ -1337,6 +1327,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             width: 30px;
         }
         .title{
+            font-weight: 300;
             /*text-align: center;*/
         }
         span{
@@ -1390,29 +1381,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         article{width: 100%;}
     }
 
-    city-picker, week-weather{
+    main{
         /*display: block;*/
         position: absolute;
         left:0px;
         top: 50px;
         bottom:40px;
-        right:-6mm;
+        right:0px;
+        /*right:-6mm;*/
         /*width: 90%;*/
         overflow-x: hidden;
         overflow-y: scroll;
         /*padding:3mm;*/
         background: #222;
     }
-    city-picker{
+    .city>main{
         bottom:0;
-/*        main{
-            padding: 3mm;
-        }
-*/        
-        /*main>*{*/
-            --title-color: orange;
-        /*}*/
-            --padding: 3mm;
+    }
+    city-picker{
+        --title-color: orange;
     }
     header {
         position: absolute;
@@ -1429,29 +1416,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         height:40px;
         background: #333;
     }
-    header>*, footer>*{
-        padding: 0 3mm;
+    header>*, footer>*, main>*{
+        margin: 0 3mm;
+        /*width: 100%;*/
     }
     </style>
     <template>
         <hash-key key="esc" hash=""></hash-key>
 
         <hash-route regex="">
-            <article>
+            <article class="city">
                 <header>
-                    <city-header></city-header>
+                    <app-title></app-title>
                 </header>
-                <city-picker on-select="setHash"></city-picker>
+                <main>
+                    <city-picker on-select="setHash"></city-picker>
+                </main>
             </article>
         </hash-route>
 
         <hash-route regex="(-?\d+\.\d+),(-?\d+\.\d+)" p1="{{lat}}" p2="{{lon}}">
-            <article>
-                <week-data lat="[[lat]]" lon="[[lon]]" sections="{{sections}}"></week-data>
+            <article class="week">
                 <header>
-                    <week-header lat="[[lat]]" lon="[[lon]]"></week-header>
+                    <week-title lat="[[lat]]" lon="[[lon]]"></week-title>
                 </header>
-                <week-weather sections="[[sections]]"></week-weather>
+                <main>
+                    <week-weather lat="[[lat]]" lon="[[lon]]"></week-weather>
+                </main>
                 <footer>
                     <week-days labels="[[sections.days]]"></week-days>
                 </footer>
@@ -1462,6 +1453,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
 
+<!--                 <week-data lat='[[lat]]' lon='[[lon]]' sections="{{sections}}"></week-data>
+                <week-weather sections="[[sections]]"></week-weather>
+ -->                
 </div>
 	<app-root></app-root>
 

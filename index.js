@@ -7801,7 +7801,7 @@ Polymer({
         }
 */
 Polymer({
-        is: "week-header",
+        is: "week-title",
         properties:{
             lat:{
                 type: Number,
@@ -8051,10 +8051,10 @@ Polymer({
             for (var i = 0; i < this.data.length; i++)
                 durations.push(this.length(this.data[i].duration));
             //            console.log('durations', Math.round(Math.min.apply(0, durations) / 5), durations);
-            return Math.round(Math.min.apply(0, durations) / 10);
+            return Math.round(Math.min.apply(0, durations) / 12);
         },
         changeBar: function (item) {
-            return Math.round((this.length(item.duration) - this.baseBar() * 10) * 2);
+            return Math.round((this.length(item.duration) - this.baseBar() * 12) * 2);
         }
 
     });
@@ -8145,14 +8145,17 @@ Polymer({
             return Math.abs(item.min - this.base) * 10;
         },
         tempBar: function (item) {
-            return Math.abs(item.max - item.min) * 10;
+            // return Math.abs(item.max - item.min) * 10;
+            return Math.abs(item.max - item.min) * 8;
         },
 
 
         // coloring...
         color: function (value) {
-            if (value > 0) return (50 - value);
-            else return 200 - value;
+            // if (value > 0) return (50 - value);
+            // else return 200 - value;
+            if (value > 0) return (40 - value);
+            else return 180 - value;
         },
         opacity: function (value) {
             return 1;
@@ -8302,15 +8305,81 @@ Polymer({
             // high:500,
             //                low: low - 0,
     });
+DATA = {
+    load: function(lat, lon, callback) {
+        DATA.loadCache(lat, lon, callback);
+        DATA.loadFresh(lat, lon, callback);
+    },
+    loadCache: function(lat, lon, callback) {
+        STORE.get(lat + ',' + lon + ' days', function(days) {
+            if (!days) return;
+            if (callback) callback(days);
+        });
+    },
+
+    loadFresh: function(lat, lon, callback) {
+        GEO.ajax('http://api.max.pub/weather/?range=days&lat=' + lat + '&lon=' + lon, function(days) {
+            days = JSON.parse(days);
+            if (!days) return;
+            STORE.set(lat + ',' + lon + ' days', days);
+            if (callback) callback(days);
+        }.bind(this));
+    },
+
+    convertDaysToSections: function(DAYS) {
+        var SECTIONS = {
+            temperature: [],
+            precipitation: [],
+            wind: [],
+            light: [],
+            cloudCover: [],
+            moon: [],
+            pressure: [],
+            humidity: [],
+            ozone: [],
+            days: []
+        };
+        for (day in DAYS) {
+            var d = DAYS[day];
+            SECTIONS.days.push(d.day);
+            SECTIONS.temperature.push(d.temperature);
+            SECTIONS.light.push(d.light);
+            SECTIONS.precipitation.push(d.precipitation);
+            SECTIONS.wind.push(d.wind);
+            SECTIONS.moon.push(d.moon);
+            SECTIONS.cloudCover.push(d.cloudCover);
+
+            // SECTIONS.humidity.push(d.humidity);
+            SECTIONS.humidity.push(Math.round(d.humidity * 100));
+            SECTIONS.ozone.push(Math.round(d.ozone));
+            SECTIONS.pressure.push(Math.round(d.pressure));
+        }
+        return SECTIONS;
+    }
+};
 Polymer({
         is: "week-weather",
         properties: {
-            lat: Number,
-            lon: Number,
+            lat:{
+                type: Number,
+                observer: 'change'
+            },
+            lon:{
+                type: Number,
+                observer: 'change'
+            },
         },
 
-        created: function () {},
-        ready: function () {
+        change: function(){
+            this.set('sections',null);
+            if(!this.lat) return;
+            if(!this.lon) return;
+
+            this.debounce('search', function(){
+                DATA.load(this.lat, this.lon, function(days){
+                    this.set('sections', DATA.convertDaysToSections(days));
+                }.bind(this));
+            }.bind(this), 100);
         }
 
     });
@@ -8332,8 +8401,8 @@ Polymer({
 Polymer({
         is: "one-city",
         properties: {
-            data: Object,
-            removeButton:String
+            data: Object
+            // removeButton:String
         },
 
         created: function () {},
@@ -8350,14 +8419,21 @@ Polymer({
         	return val;
             return Math.round(val);
         },
-        remove:function(ev){
-        	// console.log('remove',this.parentElement.parentElement);
-        	console.log('remove',this.data.lat.toFixed(2)+','+this.data.lon.toFixed(2));
-        	STORE.del(this.data.lat.toFixed(2)+','+this.data.lon.toFixed(2)+' name');
-        	STORE.del(this.data.lat.toFixed(2)+','+this.data.lon.toFixed(2)+' days');
-        	// setTimeout(function(){this.parentElement.parentElement.loadRecent()}.bind(this), 200);
-        	// setTimeout(this.parentElement.parentElement.loadRecent.bind(this), 300);
+        addStar: function(){
+
+        },
+        delStar: function(){
+
         }
+        // remove:function(ev){
+        // 	// console.log('remove',this.parentElement.parentElement);
+        // 	console.log('remove',this.data.lat.toFixed(2)+','+this.data.lon.toFixed(2));
+        //     this.fire('remove',this.data);
+        // 	// STORE.del(this.data.lat.toFixed(2)+','+this.data.lon.toFixed(2)+' name');
+        // 	// STORE.del(this.data.lat.toFixed(2)+','+this.data.lon.toFixed(2)+' days');
+        // 	// setTimeout(function(){this.parentElement.parentElement.loadRecent()}.bind(this), 200);
+        // 	// setTimeout(this.parentElement.parentElement.loadRecent.bind(this), 300);
+        // }
 
 
     });
@@ -8528,13 +8604,9 @@ Polymer({
     });
 Polymer({
         is: "city-picker",
-        selected: function (ev) {
-            console.log('city-picker selected',ev.detail);
-            this.fire('select',ev.detail);
-        },
     });
 Polymer({
-        is: "city-header",
+        is: "app-title",
     });
 STORE = {
     available: {},
@@ -8574,6 +8646,10 @@ STORE = {
             if (key.match(new RegExp('^' + regex + '$')))
                 STORE.changeHandlers[regex](key, val);
             // console.log('inform', key, regex, key.match(new RegExp('^' + regex + '$')));
+    },
+    getChange: function(key, callback) {
+        STORE.onChange(key, callback);
+        STORE.get(key, callback);
     },
 
 
