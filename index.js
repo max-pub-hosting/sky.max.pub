@@ -9075,3 +9075,7 @@ Polymer({
     setLocation = function(lat,lon){
         document.location.hash = ''+ (lat*1).toFixed(2)+','+(lon*1).toFixed(2);
     };
+window.addEventListener('WebComponentsReady', function(e) {
+	// alert('hide splash screen now');
+	console.log("WebComponentsReady! hide splash-screen now",e);
+});
