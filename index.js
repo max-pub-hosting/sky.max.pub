@@ -7640,6 +7640,10 @@ Polymer({
                 type: String,
                 observer: 'urlChange'
             },
+            mode: {
+                type:String,
+                value: 'css'
+            },
             p1:{ notify: true },
             p2:{ notify: true },
             p3:{ notify: true },
@@ -7648,9 +7652,20 @@ Polymer({
         },
 
         ready: function () {
-            this.hidden = true;
+            this.DOM = true;
+            this.hide();
             window.addEventListener('hashchange',this.match.bind(this));
             this.match(); // is there another way??
+        },
+        show: function(){
+            if(this.mode.toLowerCase()=='dom') this.DOM = true;
+            this.hidden = false;
+            // console.log("HASH",this.regex,this.DOM);
+        },
+        hide: function(){
+            if(this.mode.toLowerCase()=='dom') this.DOM = false;
+            this.hidden = true;
+            // console.log("HASH",this.regex,this.DOM);
         },
         urlChange: function(event){
             this.match();
@@ -7668,7 +7683,9 @@ Polymer({
                 this.set('p4',match[4]);
                 this.set('p5',match[5]);
             }
-            this.hidden = match ? false : true;
+            if(match) this.show();
+            else this.hide();
+            // this.hidden = match ? false : true;
             // if(match) console.log('HASH-ROUTE match:', hash, regex);
         }
     });
@@ -8312,7 +8329,7 @@ DATA = {
 
     update: function(lat, lon, callback) {
         console.log('update', lat, lon);
-        GEO.ajax('http://api.max.pub/weather/?range=days&lat=' + lat + '&lon=' + lon, function(days) {
+        GEO.ajax('https://api.max.pub/weather/?range=days&lat=' + lat + '&lon=' + lon, function(days) {
             days = JSON.parse(days);
             if (!days) return;
             STORE.set(lat + ',' + lon + ' days', days);
@@ -8363,7 +8380,15 @@ Polymer({
                 observer: 'change'
             },
         },
-
+        ready: function(){
+            this.onlineStatus();
+            window.addEventListener('online',  this.onlineStatus.bind(this));
+            window.addEventListener('offline', this.onlineStatus.bind(this));
+        },
+        onlineStatus: function(){
+            // console.log('online',navigator.onLine);
+            this.set('offline',navigator.onLine?false:true);
+        },
         change: function(){
             this.set('sections',null);
             if(!this.lat) return;
@@ -8516,7 +8541,7 @@ MegaCities = [{
 		"country": "United States",
 		"population": 24,
 		"lat": 40.71,
-		"lon": -74.00
+		"lon": -74.01
 	}, {
 		"city": "Bangkok",
 		"country": "Thailand",
@@ -8782,12 +8807,29 @@ GEO = {
             }
         },
         ip: {
-            demo: function(callback) {
-                GEO.log('ip.DEMO');
-                GEO.location.ip.provider = 'demo';
-                GEO.location.ip.lat = 5.12345;
-                GEO.location.ip.lon = 5.12345;
-                if (callback) callback(GEO.location.ip);
+            default: 'max_pub',
+            ipinfo_io: function(callback) {
+                GEO.ajax('http://ipinfo.io/json/', function(data) {
+                    data = JSON.parse(data);
+                    var latlon = data.loc.split(',');
+                    GEO.location.ip = {
+                        ip: data.ip,
+                        country: data.country,
+                        region: data.region,
+                        city: data.city,
+                        lat: (latlon[0] * 1).toFixed(2),
+                        lon: (latlon[1] * 1).toFixed(2),
+                        provider: 'ipinfo.io'
+                    };
+                    if (callback) callback(GEO.location.ip);
+                });
+            },
+            max_pub: function(callback) {
+                GEO.ajax('https://api.max.pub/geoip/', function(data) {
+                    data = JSON.parse(data);
+                    GEO.location.ip = data;
+                    if (callback) callback(GEO.location.ip);
+                });
             }
         }
     },
@@ -8820,10 +8862,7 @@ GEO = {
     },
 
     ip: function(callback) {
-        if (GEO.provider.ip.ipinfo_io)
-            GEO.provider.ip.ipinfo_io(callback);
-        else
-            GEO.provider.ip.demo(callback);
+        GEO.provider.ip[GEO.provider.ip.default](callback);
     },
 
     gps: function(callback) {
@@ -8936,7 +8975,7 @@ GEO.provider.search.google = { // using google maps api... implementing bing,OSM
         return list;
     },
     search: function(query, callback) { // call with "lat,lng,callback"   OR    "address,callback"
-        GEO.ajax("http://maps.google.com/maps/api/geocode/json?sensor=true&address=" + query, function(result) { // &language=de
+        GEO.ajax("https://maps.google.com/maps/api/geocode/json?sensor=true&address=" + query, function(result) { // &language=de
             var raw = JSON.parse(result);
             var places = GEO.provider.search.google.parse(raw);
             if (callback) callback(places, raw);

@@ -12,9 +12,10 @@
       "scripts": ["chrome.js"]
     }
   },
+  "offline_enabled": true,
   "permissions": [
     "storage",
     "geolocation",
-    "http://api.max.pub/weather/"
+    "https://api.max.pub/weather/"
   ]
 }

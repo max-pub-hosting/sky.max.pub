@@ -65,7 +65,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 <dom-module id="hash-route" assetpath="bower_components/hash-router/">
     <template>
-        <content></content>
+        <template is="dom-if" if="{{DOM}}" restamp="true">
+            <content></content>
+        </template>
     </template>
 </dom-module>
 
@@ -988,6 +990,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <template>
 
         <div hidden$="[[loading]]">
+            <h1 hidden$="[[!offline]]">OFFLINE</h1>
             <temperature-range data="[[sections.temperature]]" unit="C"></temperature-range>
             <rain-bucket data="[[sections.precipitation]]" unit="%"></rain-bucket>
             <cloud-cover data="[[sections.cloudCover]]" unit="%"></cloud-cover>
@@ -1414,7 +1417,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <template>
         <hash-key key="esc" hash=""></hash-key>
-
+        
         <hash-route regex="">
             <article class="city">
                 <header>
