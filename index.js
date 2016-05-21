@@ -1443,4 +1443,6 @@ Polymer({
 window.addEventListener('WebComponentsReady', function(e) {
 	// alert('hide splash screen now');
 	console.log("WebComponentsReady! hide splash-screen now",e);
+	var tmp = document.getElementById('splashscreen');
+	tmp.parentElement.removeChild(tmp);
 });
