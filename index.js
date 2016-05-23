@@ -1,3 +1,22 @@
+addSplashScreen = function() {
+	console.log('addSplashScreen', document.getElementsByTagName('body'));
+	var html = '';
+	html += "<center id='splash-js' style='background:#333;position:absolute;top:0;left:0;width:100%;height:100%;'>";
+	html += "<img src='bin/icon.png' style='margin-top: 20%;'/>";
+	html += "<h1 style='color:white; margin-top:10%;'>Weather Charts</h1>";
+	html += "</center>";
+	document.getElementsByTagName('body')[0].innerHTML += html;
+}
+addSplashScreen();
+
+window.addEventListener('WebComponentsReady', function(e) {
+	// alert('hide splash screen now');
+	console.log("WebComponentsReady! hide splash-screen now", e);
+	var tmp = document.getElementById('splash-js');
+	tmp.parentNode.removeChild(tmp);
+});
+
+// window.addEventListener('ready', addSplashScreen);
 Polymer({
         is: "hash-route",
         properties: {
@@ -1440,9 +1459,3 @@ Polymer({
     setLocation = function(lat,lon){
         document.location.hash = ''+ (lat*1).toFixed(2)+','+(lon*1).toFixed(2);
     };
-window.addEventListener('WebComponentsReady', function(e) {
-	// alert('hide splash screen now');
-	console.log("WebComponentsReady! hide splash-screen now",e);
-	var tmp = document.getElementById('splashscreen');
-	tmp.parentElement.removeChild(tmp);
-});

@@ -5,14 +5,15 @@
   "version": "1.0",
   "author": "www.max.pub",
   "icons": {
-    "256": "icon.png"
+    "256": "bin/icon.png"
   },
   "app": {
     "background": {
-      "scripts": ["chrome.js"]
+      "scripts": ["lib/chrome.app.js"]
     }
   },
   "offline_enabled": true,
+  // "content_security_policy": "script-src 'self' https://api.max.pub",
   "permissions": [
     "storage",
     "geolocation",

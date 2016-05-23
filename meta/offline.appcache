@@ -1,8 +1,10 @@
 CACHE MANIFEST
-# V8
+# V9212
 
 
-CACHE:
+#CACHE:
+https://max.pub/webcomponents.js
+https://max.pub/polymer.js
 index.html
 index.js
 icon.png
