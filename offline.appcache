@@ -4,9 +4,10 @@ CACHE MANIFEST
 
 CACHE:
 index.html
-index.js
+#index.js
 lib/webcomponents.js
 lib/polymer.js
+lib/app.js
 bin/icon.png
 bin/cloud.png
 bin/moon.png
