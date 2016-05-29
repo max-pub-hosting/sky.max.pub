@@ -16,7 +16,7 @@
   // "content_security_policy": "script-src 'self' https://api.max.pub",
   "permissions": [
     "storage",
-    "geolocation",
-    "https://api.max.pub/weather/"
+    "geolocation"
+    // "https://api.max.pub/weather/"
   ]
 }

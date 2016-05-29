@@ -1,12 +1,13 @@
 CACHE MANIFEST
-# 2016-05-23
+# 2016-05-29
 
-#CACHE:
-https://max.pub/webcomponents.js
-https://max.pub/polymer.js
+
+CACHE:
 index.html
 index.js
-icon.png
+lib/webcomponents.js
+lib/polymer.js
+bin/icon.png
 bin/cloud.png
 bin/moon.png
 bin/rain.png
@@ -15,6 +16,10 @@ bin/sun.png
 bin/wind.png
 bin/source.sans.300.ttf
 bin/source.sans.500.ttf
+
+#https://max.pub/webcomponents.js
+#https://max.pub/polymer.js
+
 
 
 NETWORK:
