@@ -8,6 +8,7 @@ index.html
 lib/webcomponents.js
 lib/polymer.js
 lib/app.js
+lib/splash.js
 bin/icon.png
 bin/cloud.png
 bin/moon.png
