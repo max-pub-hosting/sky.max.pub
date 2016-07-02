@@ -5,6 +5,7 @@ CACHE MANIFEST
 CACHE:
 index.html
 lib/app.js
+lib/chrome.json
 bin/icon.png
 bin/cloud.png
 bin/moon.png
