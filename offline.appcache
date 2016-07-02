@@ -4,7 +4,7 @@ CACHE MANIFEST
 
 CACHE:
 index.html
-app.js
+lib/app.js
 bin/icon.png
 bin/cloud.png
 bin/moon.png
